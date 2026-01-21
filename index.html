@@ -357,12 +357,12 @@
         }
 
         .tile-text {
-            font-size: clamp(11px, 2.5vw, 14px);
+            font-size: clamp(13px, 3vw, 16px);
             font-weight: bold;
             color: var(--osrs-light-tan);
-            text-shadow: 1px 1px 0 var(--osrs-black), -1px -1px 0 var(--osrs-black), 1px -1px 0 var(--osrs-black), -1px 1px 0 var(--osrs-black);
+            text-shadow: 2px 2px 0 var(--osrs-black), -1px -1px 0 var(--osrs-black), 1px -1px 0 var(--osrs-black), -1px 1px 0 var(--osrs-black), 0 0 3px var(--osrs-black);
             word-break: break-word;
-            line-height: 1.3;
+            line-height: 1.2;
         }
 
         .bingo-tile.completed .tile-text { color: var(--osrs-yellow); }
@@ -632,45 +632,47 @@
            CHANGELOG
            ============================================ */
         .changelog-entry {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             border-bottom: 1px solid var(--osrs-border-dark);
-            padding-bottom: 15px;
+            padding-bottom: 20px;
         }
 
         .changelog-entry:last-child { border-bottom: none; }
 
         .changelog-date {
             font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
+            font-size: 13px;
             color: var(--osrs-gold);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .changelog-date .toggle { font-size: 8px; }
+        .changelog-date .toggle { font-size: 10px; }
 
         .changelog-badge {
             background: var(--osrs-green);
             color: var(--osrs-black);
-            font-size: 8px;
-            padding: 2px 6px;
+            font-size: 10px;
+            padding: 3px 8px;
             font-family: 'Courier New', monospace;
+            font-weight: bold;
         }
 
         .changelog-items {
             list-style: none;
-            padding-left: 10px;
+            padding-left: 15px;
         }
 
         .changelog-items li {
             color: var(--osrs-tan);
-            font-size: 11px;
-            margin-bottom: 5px;
-            padding-left: 15px;
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-left: 20px;
             position: relative;
+            line-height: 1.4;
         }
 
         .changelog-items li::before {
@@ -678,6 +680,7 @@
             color: var(--osrs-gold);
             position: absolute;
             left: 0;
+            font-size: 16px;
         }
 
         .changelog-collapsed { display: none; }
@@ -873,11 +876,11 @@
 
     <!-- Changelog Modal -->
     <div class="modal-overlay" id="changelogModal">
-        <div class="modal" style="max-width: 500px;">
+        <div class="modal" style="max-width: 600px; width: 95%;">
             <div class="modal-header">
                 <div class="modal-title">📋 Changelog</div>
             </div>
-            <div class="modal-body" id="changelogContent"></div>
+            <div class="modal-body" id="changelogContent" style="padding: 25px;"></div>
             <div class="modal-buttons">
                 <button class="osrs-btn" onclick="closeModal('changelogModal')">Close</button>
             </div>
@@ -938,7 +941,6 @@
         let tileStates = JSON.parse(localStorage.getItem('bingoStates')) || {};
         let selectedSections = new Set();
         let currentTileContext = null;
-        let osrsItemsCache = null;
 
         // ============================================
         // INIT
@@ -949,7 +951,6 @@
             renderSections();
             updateProgress();
             setupEventListeners();
-            loadOsrsItems();
             checkChangelogBadge();
         }
 
@@ -1321,21 +1322,6 @@
         // ============================================
         // ITEM LOOKUP
         // ============================================
-        async function loadOsrsItems() {
-            if (osrsItemsCache) return;
-            
-            try {
-                // Try to get the full item list
-                const response = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping', {
-                    headers: { 'User-Agent': 'OSRS Bingo Board - Goal Tracker' }
-                });
-                osrsItemsCache = await response.json();
-            } catch (err) {
-                console.error('Failed to load items:', err);
-                osrsItemsCache = [];
-            }
-        }
-
         function openItemLookup() {
             hideContextMenu();
             document.getElementById('lookupInput').value = '';
@@ -1351,32 +1337,39 @@
             spinner.classList.add('visible');
 
             try {
-                await loadOsrsItems();
+                // Use OSRS Wiki opensearch API - includes ALL items (tradeables AND untradeables)
+                const searchUrl = `https://oldschool.runescape.wiki/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=20&namespace=0&format=json&origin=*`;
                 
-                const queryLower = query.toLowerCase();
-                const matchingItems = osrsItemsCache.filter(item =>
-                    item.name.toLowerCase().includes(queryLower)
-                ).slice(0, 20);
-
-                if (matchingItems.length === 0) {
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+                
+                // data[1] contains the titles, data[3] contains the URLs
+                const titles = data[1] || [];
+                
+                if (titles.length === 0) {
                     results.innerHTML = '<div class="lookup-no-results">No items found. Try a different search.</div>';
-                } else {
-                    results.innerHTML = matchingItems.map(item => {
-                        const imageName = item.name.replace(/ /g, '_');
-                        const imageUrl = `https://oldschool.runescape.wiki/images/${encodeURIComponent(imageName)}_detail.png`;
-                        const fallbackUrl = `https://oldschool.runescape.wiki/images/${encodeURIComponent(imageName)}.png`;
-
-                        return `
-                            <div class="lookup-result-item" onclick="selectItem('${escapeHtml(item.name)}', '${escapeHtml(imageUrl)}', '${escapeHtml(fallbackUrl)}')">
-                                <img class="lookup-result-img" src="${imageUrl}" onerror="this.src='${fallbackUrl}'">
-                                <span class="lookup-result-name">${escapeHtml(item.name)}</span>
-                            </div>
-                        `;
-                    }).join('');
+                    results.classList.add('visible');
+                    spinner.classList.remove('visible');
+                    return;
                 }
+
+                // Build results HTML
+                results.innerHTML = titles.map(title => {
+                    const imageName = title.replace(/ /g, '_');
+                    const imageUrl = `https://oldschool.runescape.wiki/images/${encodeURIComponent(imageName)}_detail.png`;
+                    const fallbackUrl = `https://oldschool.runescape.wiki/images/${encodeURIComponent(imageName)}.png`;
+
+                    return `
+                        <div class="lookup-result-item" onclick="selectItem('${escapeHtml(title)}', '${escapeHtml(imageUrl)}', '${escapeHtml(fallbackUrl)}')">
+                            <img class="lookup-result-img" src="${imageUrl}" onerror="this.onerror=null; this.src='${fallbackUrl}';">
+                            <span class="lookup-result-name">${escapeHtml(title)}</span>
+                        </div>
+                    `;
+                }).join('');
 
                 results.classList.add('visible');
             } catch (err) {
+                console.error('Search error:', err);
                 results.innerHTML = '<div class="lookup-no-results">Search failed. Try again.</div>';
                 results.classList.add('visible');
             }
