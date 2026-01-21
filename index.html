@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSRS 2026 Goal Board</title>
+    
+    <!-- RuneScape-style font -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+           OSRS COLOR PALETTE & VARIABLES
+           ============================================ */
+        :root {
+            --osrs-dark-brown: #2e2218;
+            --osrs-medium-brown: #3e3024;
+            --osrs-light-brown: #5c4a3d;
+            --osrs-tan: #c9ad86;
+            --osrs-light-tan: #d9c9a8;
+            --osrs-gold: #ff981f;
+            --osrs-yellow: #ffff00;
+            --osrs-green: #00ff00;
+            --osrs-red: #ff0000;
+            --osrs-orange: #ff6600;
+            --osrs-black: #0e0e0e;
+            --osrs-shadow: #1a1410;
+            --osrs-border-light: #6b5a4a;
+            --osrs-border-dark: #1a120a;
+            --osrs-completed: #3d6b1e;
+            --osrs-completed-light: #4a8525;
+        }
+
+        /* ============================================
+           GLOBAL STYLES & RESET
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--osrs-black);
+            background-image: radial-gradient(ellipse at center, #1a1612 0%, #0e0e0e 100%);
+            min-height: 100vh;
+            color: var(--osrs-tan);
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+           OSRS-STYLE SCROLLBAR
+           ============================================ */
+        ::-webkit-scrollbar { width: 16px; }
+        ::-webkit-scrollbar-track { background: var(--osrs-dark-brown); border-left: 2px solid var(--osrs-border-dark); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--osrs-light-brown) 0%, var(--osrs-medium-brown) 100%); border: 2px solid var(--osrs-border-light); }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--osrs-tan) 0%, var(--osrs-light-brown) 100%); }
+
+        /* ============================================
+           MAIN CONTAINER
+           ============================================ */
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .osrs-panel {
+            background: linear-gradient(180deg, #4a3c2e 0%, #3a2e22 50%, #2e2218 100%);
+            border: 4px solid var(--osrs-border-dark);
+            box-shadow: inset 0 0 0 1px var(--osrs-border-light), inset 0 0 0 2px var(--osrs-border-dark), 0 4px 8px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        /* ============================================
+           TITLE BANNER
+           ============================================ */
+        .title-banner {
+            background: linear-gradient(180deg, #2a1f15 0%, #1a1410 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--osrs-border-dark);
+            position: relative;
+        }
+
+        .title-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--osrs-gold), transparent);
+        }
+
+        .main-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(14px, 4vw, 24px);
+            color: var(--osrs-gold);
+            text-shadow: 2px 2px 0 var(--osrs-black), -1px -1px 0 var(--osrs-black), 1px -1px 0 var(--osrs-black), -1px 1px 0 var(--osrs-black), 0 0 10px rgba(255, 152, 31, 0.5);
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .main-title:hover {
+            color: var(--osrs-yellow);
+        }
+
+        /* ============================================
+           INSTRUCTIONS
+           ============================================ */
+        .instructions {
+            background: var(--osrs-shadow);
+            padding: 8px 15px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--osrs-tan);
+            border-bottom: 2px solid var(--osrs-border-dark);
+            line-height: 1.6;
+        }
+
+        .instructions span { color: var(--osrs-gold); }
+
+        /* ============================================
+           TOOLBAR
+           ============================================ */
+        .toolbar {
+            background: linear-gradient(180deg, #3a2e22 0%, #2e2218 100%);
+            padding: 15px;
+            border-bottom: 2px solid var(--osrs-border-dark);
+        }
+
+        .toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .toolbar-row:last-child { margin-bottom: 0; }
+
+        .toolbar-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--osrs-gold);
+            text-shadow: 1px 1px 0 var(--osrs-black);
+        }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .osrs-btn {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(180deg, #6b5a4a 0%, #4a3c2e 40%, #3a2e22 100%);
+            color: var(--osrs-tan);
+            border: 2px solid var(--osrs-border-dark);
+            box-shadow: inset 0 1px 0 var(--osrs-border-light), inset 0 -2px 0 var(--osrs-shadow), 2px 2px 0 var(--osrs-black);
+        }
+
+        .osrs-btn:hover {
+            background: linear-gradient(180deg, #7b6a5a 0%, #5a4c3e 40%, #4a3e32 100%);
+            color: var(--osrs-light-tan);
+        }
+
+        .osrs-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: inset 0 2px 4px var(--osrs-shadow), 1px 1px 0 var(--osrs-black);
+        }
+
+        .osrs-btn.active {
+            background: linear-gradient(180deg, #5a8525 0%, #3d6b1e 40%, #2d5016 100%);
+            color: var(--osrs-yellow);
+        }
+
+        .osrs-btn.active::before { content: '✓ '; }
+
+        .filter-pills { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+
+        .show-all-link {
+            font-size: 11px;
+            color: #888;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: auto;
+            padding: 5px 10px;
+        }
+
+        .show-all-link:hover { color: var(--osrs-gold); }
+        .show-all-link.dimmed { color: #555; text-decoration: none; }
+
+        .action-buttons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+        /* ============================================
+           PROGRESS BAR
+           ============================================ */
+        .progress-container {
+            background: var(--osrs-shadow);
+            padding: 12px 15px;
+            border-bottom: 2px solid var(--osrs-border-dark);
+        }
+
+        .progress-bar-outer {
+            background: var(--osrs-black);
+            border: 2px solid var(--osrs-border-dark);
+            height: 24px;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(180deg, #5a8525 0%, #3d6b1e 50%, #2d5016 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--osrs-yellow);
+            text-shadow: 1px 1px 0 var(--osrs-black), -1px -1px 0 var(--osrs-black);
+            white-space: nowrap;
+            z-index: 1;
+        }
+
+        /* ============================================
+           SECTIONS
+           ============================================ */
+        .sections-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .section {
+            background: linear-gradient(180deg, #3a2e22 0%, #2e2218 100%);
+            border: 3px solid var(--osrs-border-dark);
+            box-shadow: inset 0 0 0 1px var(--osrs-border-light), 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .section-header {
+            background: linear-gradient(180deg, #2a1f15 0%, #1a1410 100%);
+            padding: 12px;
+            text-align: center;
+            border-bottom: 2px solid var(--osrs-border-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(10px, 2.5vw, 14px);
+            color: var(--osrs-gold);
+            text-shadow: 1px 1px 0 var(--osrs-black);
+            cursor: pointer;
+        }
+
+        .section-title:hover { color: var(--osrs-yellow); }
+
+        /* ============================================
+           BINGO GRID - Dynamic up to 4x4
+           ============================================ */
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            padding: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           TILES
+           ============================================ */
+        .bingo-tile {
+            width: 100%;
+            aspect-ratio: 1;
+            max-width: 120px;
+            background: linear-gradient(145deg, #4a3c2e 0%, #3a2e22 50%, #2e2218 100%);
+            border: 3px solid var(--osrs-border-dark);
+            box-shadow: inset 0 0 0 1px var(--osrs-border-light), inset 0 0 20px rgba(0,0,0,0.3), 3px 3px 0 var(--osrs-black);
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .bingo-tile:hover {
+            background: linear-gradient(145deg, #5a4c3e 0%, #4a3e32 50%, #3e3228 100%);
+            border-color: var(--osrs-border-light);
+            transform: translate(-1px, -1px);
+        }
+
+        /* Partial completion fill */
+        .bingo-tile .completion-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, #4a8525 0%, #3d6b1e 50%, #2d5016 100%);
+            transition: height 0.3s ease;
+            z-index: 0;
+        }
+
+        .bingo-tile.completed {
+            background: linear-gradient(145deg, #4a8525 0%, #3d6b1e 50%, #2d5016 100%);
+            box-shadow: inset 0 0 0 1px #6ba84a, inset 0 0 20px rgba(0,0,0,0.2), 3px 3px 0 var(--osrs-black), 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+
+        .bingo-tile.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 14px;
+            color: var(--osrs-yellow);
+            text-shadow: 1px 1px 0 var(--osrs-black);
+            z-index: 3;
+        }
+
+        .tile-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tile-image {
+            max-width: 80%;
+            max-height: 60%;
+            object-fit: contain;
+            image-rendering: pixelated;
+            filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.5));
+        }
+
+        .tile-text {
+            font-size: clamp(11px, 2.5vw, 14px);
+            font-weight: bold;
+            color: var(--osrs-light-tan);
+            text-shadow: 1px 1px 0 var(--osrs-black), -1px -1px 0 var(--osrs-black), 1px -1px 0 var(--osrs-black), -1px 1px 0 var(--osrs-black);
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        .bingo-tile.completed .tile-text { color: var(--osrs-yellow); }
+
+        /* Sub-goal indicator */
+        .subgoal-indicator {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: var(--osrs-gold);
+            background: rgba(0,0,0,0.7);
+            padding: 2px 6px;
+            border-radius: 3px;
+            z-index: 2;
+        }
+
+        /* Add tile button */
+        .add-tile-btn {
+            width: 100%;
+            aspect-ratio: 1;
+            max-width: 120px;
+            background: linear-gradient(145deg, #3a3020 0%, #2a2218 50%, #1e1810 100%);
+            border: 3px dashed var(--osrs-border-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--osrs-border-light);
+            transition: all 0.15s;
+        }
+
+        .add-tile-btn:hover {
+            background: linear-gradient(145deg, #4a4030 0%, #3a3228 50%, #2e2820 100%);
+            color: var(--osrs-gold);
+            border-color: var(--osrs-gold);
+        }
+
+        /* ============================================
+           CONTEXT MENU (Click Menu)
+           ============================================ */
+        .context-menu {
+            position: fixed;
+            background: linear-gradient(180deg, #4a3c2e 0%, #3a2e22 100%);
+            border: 3px solid var(--osrs-border-dark);
+            box-shadow: inset 0 0 0 1px var(--osrs-border-light), 4px 4px 8px rgba(0,0,0,0.5);
+            z-index: 1000;
+            min-width: 160px;
+            display: none;
+        }
+
+        .context-menu.visible { display: block; }
+
+        .context-menu-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--osrs-tan);
+            border-bottom: 1px solid var(--osrs-border-dark);
+            transition: all 0.1s;
+        }
+
+        .context-menu-item:last-child { border-bottom: none; }
+        .context-menu-item:hover { background: var(--osrs-light-brown); color: var(--osrs-yellow); }
+        .context-menu-item.disabled { color: #666; cursor: not-allowed; }
+        .context-menu-item.disabled:hover { background: none; color: #666; }
+
+        /* ============================================
+           MODALS
+           ============================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            padding: 20px;
+        }
+
+        .modal-overlay.visible { display: flex; }
+
+        .modal {
+            background: linear-gradient(180deg, #4a3c2e 0%, #3a2e22 50%, #2e2218 100%);
+            border: 4px solid var(--osrs-border-dark);
+            box-shadow: inset 0 0 0 2px var(--osrs-border-light), 0 10px 30px rgba(0,0,0,0.5);
+            min-width: 300px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(180deg, #2a1f15 0%, #1a1410 100%);
+            padding: 15px;
+            border-bottom: 2px solid var(--osrs-border-dark);
+            position: sticky;
+            top: 0;
+        }
+
+        .modal-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            color: var(--osrs-gold);
+            text-shadow: 1px 1px 0 var(--osrs-black);
+            text-align: center;
+        }
+
+        .modal-body { padding: 20px; }
+
+        .modal-label {
+            display: block;
+            font-size: 11px;
+            color: var(--osrs-gold);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: var(--osrs-black);
+            border: 2px solid var(--osrs-border-dark);
+            color: var(--osrs-tan);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .modal-input:focus { outline: none; border-color: var(--osrs-gold); }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            padding-top: 10px;
+        }
+
+        /* ============================================
+           ITEM LOOKUP
+           ============================================ */
+        .lookup-container { position: relative; }
+
+        .lookup-input-wrapper { position: relative; }
+
+        .lookup-input {
+            width: 100%;
+            padding: 12px;
+            padding-right: 40px;
+            background: var(--osrs-black);
+            border: 2px solid var(--osrs-border-dark);
+            color: var(--osrs-tan);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .lookup-input:focus { outline: none; border-color: var(--osrs-gold); }
+
+        .lookup-spinner {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--osrs-gold);
+            display: none;
+        }
+
+        .lookup-spinner.visible { display: block; animation: spin 1s linear infinite; }
+
+        @keyframes spin { 100% { transform: translateY(-50%) rotate(360deg); } }
+
+        .lookup-results {
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            max-height: 250px;
+            overflow-y: auto;
+            background: var(--osrs-dark-brown);
+            border: 2px solid var(--osrs-border-dark);
+            border-top: none;
+            z-index: 100;
+            display: none;
+        }
+
+        .lookup-results.visible { display: block; }
+
+        .lookup-result-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--osrs-border-dark);
+        }
+
+        .lookup-result-item:hover { background: var(--osrs-light-brown); }
+        .lookup-result-item:hover .lookup-result-name { color: var(--osrs-yellow); }
+
+        .lookup-result-img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            background: var(--osrs-black);
+            border: 1px solid var(--osrs-border-dark);
+            padding: 2px;
+        }
+
+        .lookup-result-name { flex: 1; color: var(--osrs-tan); font-size: 13px; }
+
+        .lookup-no-results { padding: 15px; text-align: center; color: #888; font-size: 12px; }
+
+        .lookup-hint { font-size: 10px; color: #666; margin-top: 8px; text-align: center; }
+
+        /* ============================================
+           SUB-GOALS
+           ============================================ */
+        .subgoal-list { margin-bottom: 15px; }
+
+        .subgoal-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: var(--osrs-black);
+            border: 1px solid var(--osrs-border-dark);
+            margin-bottom: 5px;
+        }
+
+        .subgoal-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--osrs-green);
+        }
+
+        .subgoal-text {
+            flex: 1;
+            color: var(--osrs-tan);
+            font-size: 12px;
+        }
+
+        .subgoal-text.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .subgoal-delete {
+            color: var(--osrs-red);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .subgoal-delete:hover { color: #ff6666; }
+
+        .add-subgoal-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-subgoal-row input { flex: 1; }
+
+        /* ============================================
+           CHANGELOG
+           ============================================ */
+        .changelog-entry {
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--osrs-border-dark);
+            padding-bottom: 15px;
+        }
+
+        .changelog-entry:last-child { border-bottom: none; }
+
+        .changelog-date {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--osrs-gold);
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .changelog-date .toggle { font-size: 8px; }
+
+        .changelog-badge {
+            background: var(--osrs-green);
+            color: var(--osrs-black);
+            font-size: 8px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .changelog-items {
+            list-style: none;
+            padding-left: 10px;
+        }
+
+        .changelog-items li {
+            color: var(--osrs-tan);
+            font-size: 11px;
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .changelog-items li::before {
+            content: '•';
+            color: var(--osrs-gold);
+            position: absolute;
+            left: 0;
+        }
+
+        .changelog-collapsed { display: none; }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer-bar {
+            background: linear-gradient(180deg, #2a1f15 0%, #1a1410 100%);
+            padding: 15px;
+            border-top: 2px solid var(--osrs-border-dark);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .footer-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 8px 14px;
+            text-decoration: none;
+            cursor: pointer;
+            background: linear-gradient(180deg, #5a4a3a 0%, #3a2e22 100%);
+            color: var(--osrs-tan);
+            border: 2px solid var(--osrs-border-dark);
+            box-shadow: inset 0 1px 0 var(--osrs-border-light), 2px 2px 0 var(--osrs-black);
+            transition: all 0.15s;
+        }
+
+        .footer-btn:hover { background: linear-gradient(180deg, #6a5a4a 0%, #4a3e32 100%); color: var(--osrs-yellow); }
+
+        .footer-btn.coffee-btn { background: linear-gradient(180deg, #6b4423 0%, #4a2f18 100%); color: #f5deb3; }
+        .footer-btn.coffee-btn:hover { background: linear-gradient(180deg, #7b5433 0%, #5a3f28 100%); }
+
+        .footer-btn .new-badge {
+            background: var(--osrs-red);
+            color: white;
+            font-size: 8px;
+            padding: 2px 4px;
+            margin-left: 4px;
+        }
+
+        /* ============================================
+           HIDDEN
+           ============================================ */
+        .hidden-input { display: none; }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 600px) {
+            .main-container { padding: 5px; }
+            .toolbar { padding: 10px; }
+            .toolbar-row { justify-content: center; }
+            .toolbar-label { width: 100%; text-align: center; margin-bottom: 5px; }
+            .filter-pills { justify-content: center; }
+            .show-all-link { width: 100%; text-align: center; margin-left: 0; margin-top: 5px; }
+            .bingo-grid { gap: 6px; padding: 10px; }
+            .osrs-btn { padding: 6px 12px; font-size: 10px; }
+            .sections-container { padding: 10px; }
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes completePulse {
+            0% { box-shadow: inset 0 0 0 1px #6ba84a, 3px 3px 0 var(--osrs-black), 0 0 0 rgba(0, 255, 0, 0); }
+            50% { box-shadow: inset 0 0 0 1px #6ba84a, 3px 3px 0 var(--osrs-black), 0 0 25px rgba(0, 255, 0, 0.5); }
+            100% { box-shadow: inset 0 0 0 1px #6ba84a, 3px 3px 0 var(--osrs-black), 0 0 15px rgba(0, 255, 0, 0.2); }
+        }
+
+        .bingo-tile.just-completed { animation: completePulse 0.5s ease; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="osrs-panel">
+            <!-- Title Banner -->
+            <div class="title-banner">
+                <h1 class="main-title" id="mainTitle" onclick="editMainTitle()">OSRS 2026 GOAL BOARD</h1>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions">
+                <span>💡 Click tiles</span> to add goals or mark complete | <span>Click titles</span> to edit
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-row">
+                    <span class="toolbar-label">Filter:</span>
+                    <div class="filter-pills" id="filterPills"></div>
+                    <span class="show-all-link" id="showAllLink" onclick="showAllSections()">Show All</span>
+                </div>
+                <div class="toolbar-row">
+                    <div class="action-buttons">
+                        <button class="osrs-btn" onclick="exportProgress()">💾 Save Progress</button>
+                        <button class="osrs-btn" onclick="document.getElementById('importFile').click()">📂 Load Progress</button>
+                        <button class="osrs-btn" onclick="resetProgress()">🔄 Reset All</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar-outer">
+                    <div class="progress-bar-inner" id="progressBar"></div>
+                    <span class="progress-text" id="progressText">0 / 0 (0%)</span>
+                </div>
+            </div>
+
+            <!-- Sections -->
+            <div class="sections-container" id="sectionsContainer"></div>
+
+            <!-- Footer -->
+            <div class="footer-bar">
+                <a href="https://github.com/TrevsCode/osrs-goals#readme" target="_blank" class="footer-btn">ℹ️ Info</a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUP7mhB5wsT73YX5gY1OfoqlDFMexl8s7c821VYHcPUfmnoA/viewform" target="_blank" class="footer-btn">💡 Suggestions</a>
+                <span class="footer-btn" onclick="openChangelog()">📋 Changelog <span class="new-badge" id="changelogBadge">NEW</span></span>
+                <a href="https://cash.app/$Trevorscotty" target="_blank" class="footer-btn coffee-btn">☕ Buy me a coffee</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu"></div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Edit Tile</div>
+            </div>
+            <div class="modal-body">
+                <label class="modal-label">Image URL:</label>
+                <input type="text" class="modal-input" id="editImageUrl" placeholder="https://oldschool.runescape.wiki/...">
+                <label class="modal-label">Text (if no image):</label>
+                <input type="text" class="modal-input" id="editText" placeholder="Goal description">
+                <div class="modal-buttons">
+                    <button class="osrs-btn" onclick="saveEdit()">Save</button>
+                    <button class="osrs-btn" onclick="closeModal('editModal')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Lookup Modal -->
+    <div class="modal-overlay" id="lookupModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">🔍 Item Lookup</div>
+            </div>
+            <div class="modal-body">
+                <div class="lookup-container">
+                    <div class="lookup-input-wrapper">
+                        <input type="text" class="lookup-input" id="lookupInput" placeholder="Search items... (e.g. abyssal whip)" autocomplete="off">
+                        <span class="lookup-spinner" id="lookupSpinner">⟳</span>
+                    </div>
+                    <div class="lookup-results" id="lookupResults"></div>
+                </div>
+                <div class="lookup-hint">Type at least 2 characters to search</div>
+                <div class="modal-buttons" style="margin-top: 15px;">
+                    <button class="osrs-btn" onclick="closeModal('lookupModal')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sub-Goals Modal -->
+    <div class="modal-overlay" id="subgoalsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">📋 Sub-Goals</div>
+            </div>
+            <div class="modal-body">
+                <div class="subgoal-list" id="subgoalList"></div>
+                <div class="add-subgoal-row" id="addSubgoalRow">
+                    <input type="text" class="modal-input" id="newSubgoalText" placeholder="New sub-goal..." style="margin-bottom: 0;">
+                    <button class="osrs-btn" onclick="addSubgoal()">Add</button>
+                </div>
+                <div id="subgoalLimitMsg" style="font-size: 10px; color: #888; margin-top: 5px;"></div>
+                <div class="modal-buttons" style="margin-top: 15px;">
+                    <button class="osrs-btn" onclick="closeModal('subgoalsModal')">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Changelog Modal -->
+    <div class="modal-overlay" id="changelogModal">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <div class="modal-title">📋 Changelog</div>
+            </div>
+            <div class="modal-body" id="changelogContent"></div>
+            <div class="modal-buttons">
+                <button class="osrs-btn" onclick="closeModal('changelogModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="importFile" class="hidden-input" accept=".json" onchange="importProgress(event)">
+
+    <script>
+        // ============================================
+        // CHANGELOG DATA
+        // ============================================
+        const CHANGELOG = [
+            {
+                date: "January 21, 2026",
+                isLatest: true,
+                items: [
+                    "NEW: Click tiles to access menu (no more right-click)",
+                    "NEW: Dynamic tiles - sections start empty, add your own goals",
+                    "NEW: Sub-goals - add up to 10 sub-tasks per tile",
+                    "NEW: Partial completion - tiles fill based on sub-goal progress",
+                    "NEW: Changelog to track updates",
+                    "IMPROVED: Better text readability on tiles",
+                    "IMPROVED: Context menu positioning for all browsers",
+                    "IMPROVED: Item lookup includes untradeable items"
+                ]
+            },
+            {
+                date: "January 18, 2026",
+                items: [
+                    "Added Item Lookup feature",
+                    "Added Save/Load progress",
+                    "Added section filtering",
+                    "Initial release"
+                ]
+            }
+        ];
+
+        const LAST_UPDATE_DATE = "2026-01-21";
+
+        // ============================================
+        // DEFAULT CONFIG
+        // ============================================
+        const DEFAULT_CONFIG = {
+            title: "OSRS 2026 GOAL BOARD",
+            sections: [
+                { name: "Gear Progression", tiles: [] },
+                { name: "Skill Progression", tiles: [] },
+                { name: "Achievements", tiles: [] }
+            ]
+        };
+
+        // ============================================
+        // STATE
+        // ============================================
+        let config = JSON.parse(localStorage.getItem('bingoConfig')) || JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        let tileStates = JSON.parse(localStorage.getItem('bingoStates')) || {};
+        let selectedSections = new Set();
+        let currentTileContext = null;
+        let osrsItemsCache = null;
+
+        // ============================================
+        // INIT
+        // ============================================
+        function init() {
+            document.getElementById('mainTitle').textContent = config.title;
+            renderFilterPills();
+            renderSections();
+            updateProgress();
+            setupEventListeners();
+            loadOsrsItems();
+            checkChangelogBadge();
+        }
+
+        function setupEventListeners() {
+            // Close context menu on click elsewhere
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.context-menu') && !e.target.closest('.bingo-tile') && !e.target.closest('.add-tile-btn')) {
+                    hideContextMenu();
+                }
+            });
+
+            // Close modals on overlay click
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal-overlay')) {
+                        closeModal(overlay.id);
+                    }
+                });
+            });
+
+            // Lookup input
+            const lookupInput = document.getElementById('lookupInput');
+            let lookupTimeout;
+            lookupInput.addEventListener('input', () => {
+                clearTimeout(lookupTimeout);
+                const query = lookupInput.value.trim();
+                if (query.length < 2) {
+                    document.getElementById('lookupResults').classList.remove('visible');
+                    return;
+                }
+                lookupTimeout = setTimeout(() => searchItems(query), 300);
+            });
+
+            lookupInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal('lookupModal');
+            });
+
+            // Subgoal enter key
+            document.getElementById('newSubgoalText').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') addSubgoal();
+            });
+        }
+
+        // ============================================
+        // FILTER PILLS
+        // ============================================
+        function renderFilterPills() {
+            const container = document.getElementById('filterPills');
+            container.innerHTML = '';
+
+            config.sections.forEach((section, idx) => {
+                const pill = document.createElement('button');
+                pill.className = 'osrs-btn' + (selectedSections.size === 0 || selectedSections.has(idx) ? ' active' : '');
+                pill.textContent = section.name;
+                pill.onclick = () => toggleSection(idx);
+                container.appendChild(pill);
+            });
+
+            updateShowAllLink();
+        }
+
+        function toggleSection(idx) {
+            if (selectedSections.size === 0) {
+                selectedSections.add(idx);
+            } else if (selectedSections.has(idx)) {
+                selectedSections.delete(idx);
+            } else {
+                selectedSections.add(idx);
+            }
+            renderFilterPills();
+            renderSections();
+        }
+
+        function showAllSections() {
+            selectedSections.clear();
+            renderFilterPills();
+            renderSections();
+        }
+
+        function updateShowAllLink() {
+            const link = document.getElementById('showAllLink');
+            if (selectedSections.size === 0) {
+                link.textContent = 'Showing All';
+                link.classList.add('dimmed');
+            } else {
+                link.textContent = 'Show All';
+                link.classList.remove('dimmed');
+            }
+        }
+
+        // ============================================
+        // SECTIONS & TILES RENDERING
+        // ============================================
+        function renderSections() {
+            const container = document.getElementById('sectionsContainer');
+            container.innerHTML = '';
+
+            config.sections.forEach((section, sectionIdx) => {
+                if (selectedSections.size > 0 && !selectedSections.has(sectionIdx)) return;
+
+                const sectionEl = document.createElement('div');
+                sectionEl.className = 'section';
+                sectionEl.innerHTML = `
+                    <div class="section-header">
+                        <h2 class="section-title" onclick="editSectionTitle(${sectionIdx})">${section.name}</h2>
+                    </div>
+                    <div class="bingo-grid" id="grid-${sectionIdx}"></div>
+                `;
+                container.appendChild(sectionEl);
+
+                const grid = sectionEl.querySelector('.bingo-grid');
+                
+                // Render existing tiles
+                section.tiles.forEach((tile, tileIdx) => {
+                    const tileEl = createTileElement(tile, sectionIdx, tileIdx);
+                    grid.appendChild(tileEl);
+                });
+
+                // Add "+" button if under max (16 tiles = 4x4)
+                if (section.tiles.length < 16) {
+                    const addBtn = document.createElement('div');
+                    addBtn.className = 'add-tile-btn';
+                    addBtn.innerHTML = '+';
+                    addBtn.onclick = (e) => showAddTileMenu(e, sectionIdx);
+                    grid.appendChild(addBtn);
+                }
+            });
+        }
+
+        function createTileElement(tile, sectionIdx, tileIdx) {
+            const tileEl = document.createElement('div');
+            const isCompleted = tileStates[tile.id]?.completed || false;
+            const subgoals = tileStates[tile.id]?.subgoals || [];
+            const completedSubgoals = subgoals.filter(s => s.completed).length;
+            const hasSubgoals = subgoals.length > 0;
+            const completionPercent = hasSubgoals ? (completedSubgoals / subgoals.length) * 100 : 0;
+
+            tileEl.className = 'bingo-tile' + (isCompleted ? ' completed' : '');
+            tileEl.dataset.tileId = tile.id;
+            tileEl.dataset.sectionIdx = sectionIdx;
+            tileEl.dataset.tileIdx = tileIdx;
+
+            // Partial completion fill for tiles with subgoals
+            if (hasSubgoals && !isCompleted) {
+                const fillEl = document.createElement('div');
+                fillEl.className = 'completion-fill';
+                fillEl.style.height = completionPercent + '%';
+                tileEl.appendChild(fillEl);
+            }
+
+            const content = document.createElement('div');
+            content.className = 'tile-content';
+
+            if (tile.image_url) {
+                const img = document.createElement('img');
+                img.className = 'tile-image';
+                img.src = tile.image_url;
+                img.alt = tile.text || 'Goal';
+                img.onerror = () => {
+                    img.style.display = 'none';
+                    const text = document.createElement('span');
+                    text.className = 'tile-text';
+                    text.textContent = tile.text || 'Goal';
+                    content.appendChild(text);
+                };
+                content.appendChild(img);
+            } else if (tile.text) {
+                const text = document.createElement('span');
+                text.className = 'tile-text';
+                text.textContent = tile.text;
+                content.appendChild(text);
+            }
+
+            tileEl.appendChild(content);
+
+            // Sub-goal indicator
+            if (hasSubgoals) {
+                const indicator = document.createElement('div');
+                indicator.className = 'subgoal-indicator';
+                indicator.textContent = `${completedSubgoals}/${subgoals.length}`;
+                tileEl.appendChild(indicator);
+            }
+
+            // Left-click handler
+            tileEl.onclick = (e) => showTileMenu(e, tile, sectionIdx, tileIdx);
+
+            return tileEl;
+        }
+
+        // ============================================
+        // CONTEXT MENU
+        // ============================================
+        function showContextMenu(e, items) {
+            const menu = document.getElementById('contextMenu');
+            menu.innerHTML = items.map(item => {
+                if (item.disabled) {
+                    return `<div class="context-menu-item disabled">${item.label}</div>`;
+                }
+                return `<div class="context-menu-item" onclick="${item.action}">${item.label}</div>`;
+            }).join('');
+
+            // Position menu - ensure it stays in viewport
+            let x = e.clientX;
+            let y = e.clientY;
+
+            menu.classList.add('visible');
+            
+            const menuRect = menu.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            if (x + menuRect.width > viewportWidth) {
+                x = viewportWidth - menuRect.width - 10;
+            }
+            if (y + menuRect.height > viewportHeight) {
+                y = viewportHeight - menuRect.height - 10;
+            }
+            if (x < 10) x = 10;
+            if (y < 10) y = 10;
+
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenu').classList.remove('visible');
+        }
+
+        function showTileMenu(e, tile, sectionIdx, tileIdx) {
+            e.stopPropagation();
+            currentTileContext = { tile, sectionIdx, tileIdx };
+
+            const isCompleted = tileStates[tile.id]?.completed || false;
+            const hasContent = tile.image_url || tile.text;
+            const hasSubgoals = (tileStates[tile.id]?.subgoals || []).length > 0;
+            const allSubgoalsComplete = hasSubgoals && 
+                tileStates[tile.id].subgoals.every(s => s.completed);
+
+            let items = [];
+
+            if (hasContent) {
+                // Tile has content
+                if (hasSubgoals && !allSubgoalsComplete) {
+                    items.push({ label: '✓ Complete Tile', action: '', disabled: true });
+                } else {
+                    items.push({ 
+                        label: isCompleted ? '↩ Mark Incomplete' : '✓ Complete Tile', 
+                        action: 'completeTile()' 
+                    });
+                }
+                items.push({ label: '📋 Sub-Goals', action: 'openSubgoals()' });
+                items.push({ label: '🔍 Item Lookup', action: 'openItemLookup()' });
+                items.push({ label: '✏️ Edit Content', action: 'editTileContent()' });
+                items.push({ label: '🗑️ Delete Tile', action: 'deleteTile()' });
+            } else {
+                // Empty tile
+                items.push({ label: '🔍 Item Lookup', action: 'openItemLookup()' });
+                items.push({ label: '✏️ Edit Content', action: 'editTileContent()' });
+                items.push({ label: '🗑️ Delete Tile', action: 'deleteTile()' });
+            }
+
+            showContextMenu(e, items);
+        }
+
+        function showAddTileMenu(e, sectionIdx) {
+            e.stopPropagation();
+            currentTileContext = { sectionIdx, isNew: true };
+
+            showContextMenu(e, [
+                { label: '🔍 Item Lookup', action: 'openItemLookup()' },
+                { label: '✏️ Add Custom', action: 'editTileContent()' }
+            ]);
+        }
+
+        // ============================================
+        // TILE ACTIONS
+        // ============================================
+        function completeTile() {
+            hideContextMenu();
+            if (!currentTileContext || currentTileContext.isNew) return;
+
+            const { tile } = currentTileContext;
+            if (!tileStates[tile.id]) {
+                tileStates[tile.id] = { completed: false, subgoals: [] };
+            }
+            
+            tileStates[tile.id].completed = !tileStates[tile.id].completed;
+            
+            // Mark all subgoals complete if completing tile
+            if (tileStates[tile.id].completed && tileStates[tile.id].subgoals) {
+                tileStates[tile.id].subgoals.forEach(s => s.completed = true);
+            }
+
+            saveState();
+            renderSections();
+            updateProgress();
+        }
+
+        function deleteTile() {
+            hideContextMenu();
+            if (!currentTileContext) return;
+
+            const { sectionIdx, tileIdx, tile, isNew } = currentTileContext;
+            if (isNew) return;
+
+            if (confirm('Delete this tile?')) {
+                config.sections[sectionIdx].tiles.splice(tileIdx, 1);
+                if (tile && tileStates[tile.id]) {
+                    delete tileStates[tile.id];
+                }
+                saveConfig();
+                saveState();
+                renderSections();
+                updateProgress();
+            }
+        }
+
+        function addNewTile(sectionIdx, imageUrl = '', text = '') {
+            const tileId = 'tile_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const newTile = { id: tileId, image_url: imageUrl, text: text };
+            
+            config.sections[sectionIdx].tiles.push(newTile);
+            tileStates[tileId] = { completed: false, subgoals: [] };
+            
+            saveConfig();
+            saveState();
+            renderSections();
+        }
+
+        // ============================================
+        // EDIT CONTENT
+        // ============================================
+        function editTileContent() {
+            hideContextMenu();
+            if (!currentTileContext) return;
+
+            const { tile, isNew } = currentTileContext;
+            
+            document.getElementById('editImageUrl').value = isNew ? '' : (tile?.image_url || '');
+            document.getElementById('editText').value = isNew ? '' : (tile?.text || '');
+            document.getElementById('editModal').classList.add('visible');
+        }
+
+        function saveEdit() {
+            if (!currentTileContext) return;
+
+            const imageUrl = document.getElementById('editImageUrl').value.trim();
+            const text = document.getElementById('editText').value.trim();
+
+            if (!imageUrl && !text) {
+                alert('Please enter an image URL or text.');
+                return;
+            }
+
+            const { sectionIdx, tileIdx, isNew } = currentTileContext;
+
+            if (isNew) {
+                addNewTile(sectionIdx, imageUrl, text);
+            } else {
+                config.sections[sectionIdx].tiles[tileIdx].image_url = imageUrl;
+                config.sections[sectionIdx].tiles[tileIdx].text = text;
+                saveConfig();
+                renderSections();
+            }
+
+            closeModal('editModal');
+        }
+
+        // ============================================
+        // ITEM LOOKUP
+        // ============================================
+        async function loadOsrsItems() {
+            if (osrsItemsCache) return;
+            
+            try {
+                // Try to get the full item list
+                const response = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping', {
+                    headers: { 'User-Agent': 'OSRS Bingo Board - Goal Tracker' }
+                });
+                osrsItemsCache = await response.json();
+            } catch (err) {
+                console.error('Failed to load items:', err);
+                osrsItemsCache = [];
+            }
+        }
+
+        function openItemLookup() {
+            hideContextMenu();
+            document.getElementById('lookupInput').value = '';
+            document.getElementById('lookupResults').classList.remove('visible');
+            document.getElementById('lookupModal').classList.add('visible');
+            setTimeout(() => document.getElementById('lookupInput').focus(), 100);
+        }
+
+        async function searchItems(query) {
+            const spinner = document.getElementById('lookupSpinner');
+            const results = document.getElementById('lookupResults');
+
+            spinner.classList.add('visible');
+
+            try {
+                await loadOsrsItems();
+                
+                const queryLower = query.toLowerCase();
+                const matchingItems = osrsItemsCache.filter(item =>
+                    item.name.toLowerCase().includes(queryLower)
+                ).slice(0, 20);
+
+                if (matchingItems.length === 0) {
+                    results.innerHTML = '<div class="lookup-no-results">No items found. Try a different search.</div>';
+                } else {
+                    results.innerHTML = matchingItems.map(item => {
+                        const imageName = item.name.replace(/ /g, '_');
+                        const imageUrl = `https://oldschool.runescape.wiki/images/${encodeURIComponent(imageName)}_detail.png`;
+                        const fallbackUrl = `https://oldschool.runescape.wiki/images/${encodeURIComponent(imageName)}.png`;
+
+                        return `
+                            <div class="lookup-result-item" onclick="selectItem('${escapeHtml(item.name)}', '${escapeHtml(imageUrl)}', '${escapeHtml(fallbackUrl)}')">
+                                <img class="lookup-result-img" src="${imageUrl}" onerror="this.src='${fallbackUrl}'">
+                                <span class="lookup-result-name">${escapeHtml(item.name)}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                results.classList.add('visible');
+            } catch (err) {
+                results.innerHTML = '<div class="lookup-no-results">Search failed. Try again.</div>';
+                results.classList.add('visible');
+            }
+
+            spinner.classList.remove('visible');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        function selectItem(name, imageUrl, fallbackUrl) {
+            if (!currentTileContext) return;
+
+            const { sectionIdx, isNew } = currentTileContext;
+
+            if (isNew) {
+                addNewTile(sectionIdx, imageUrl, name);
+            } else {
+                const { tileIdx } = currentTileContext;
+                config.sections[sectionIdx].tiles[tileIdx].image_url = imageUrl;
+                config.sections[sectionIdx].tiles[tileIdx].text = name;
+                saveConfig();
+                renderSections();
+            }
+
+            closeModal('lookupModal');
+        }
+
+        // ============================================
+        // SUB-GOALS
+        // ============================================
+        function openSubgoals() {
+            hideContextMenu();
+            if (!currentTileContext || currentTileContext.isNew) return;
+
+            renderSubgoalList();
+            document.getElementById('subgoalsModal').classList.add('visible');
+        }
+
+        function renderSubgoalList() {
+            const { tile } = currentTileContext;
+            if (!tileStates[tile.id]) {
+                tileStates[tile.id] = { completed: false, subgoals: [] };
+            }
+
+            const subgoals = tileStates[tile.id].subgoals || [];
+            const list = document.getElementById('subgoalList');
+
+            if (subgoals.length === 0) {
+                list.innerHTML = '<div style="color: #888; font-size: 11px; margin-bottom: 10px;">No sub-goals yet. Add one below!</div>';
+            } else {
+                list.innerHTML = subgoals.map((sg, idx) => `
+                    <div class="subgoal-item">
+                        <input type="checkbox" class="subgoal-checkbox" ${sg.completed ? 'checked' : ''} onchange="toggleSubgoal(${idx})">
+                        <span class="subgoal-text ${sg.completed ? 'completed' : ''}">${escapeHtml(sg.text)}</span>
+                        <span class="subgoal-delete" onclick="deleteSubgoal(${idx})">✕</span>
+                    </div>
+                `).join('');
+            }
+
+            // Show/hide add row based on limit
+            const addRow = document.getElementById('addSubgoalRow');
+            const limitMsg = document.getElementById('subgoalLimitMsg');
+            if (subgoals.length >= 10) {
+                addRow.style.display = 'none';
+                limitMsg.textContent = 'Maximum 10 sub-goals reached.';
+            } else {
+                addRow.style.display = 'flex';
+                limitMsg.textContent = `${subgoals.length}/10 sub-goals`;
+            }
+        }
+
+        function addSubgoal() {
+            const { tile } = currentTileContext;
+            const input = document.getElementById('newSubgoalText');
+            const text = input.value.trim();
+
+            if (!text) return;
+            if (!tileStates[tile.id]) {
+                tileStates[tile.id] = { completed: false, subgoals: [] };
+            }
+            if (tileStates[tile.id].subgoals.length >= 10) return;
+
+            tileStates[tile.id].subgoals.push({ text, completed: false });
+            input.value = '';
+
+            saveState();
+            renderSubgoalList();
+            renderSections();
+            updateProgress();
+        }
+
+        function toggleSubgoal(idx) {
+            const { tile } = currentTileContext;
+            tileStates[tile.id].subgoals[idx].completed = !tileStates[tile.id].subgoals[idx].completed;
+
+            // Check if all subgoals complete
+            const allComplete = tileStates[tile.id].subgoals.every(s => s.completed);
+            if (allComplete && tileStates[tile.id].subgoals.length > 0) {
+                tileStates[tile.id].completed = true;
+            } else {
+                tileStates[tile.id].completed = false;
+            }
+
+            saveState();
+            renderSubgoalList();
+            renderSections();
+            updateProgress();
+        }
+
+        function deleteSubgoal(idx) {
+            const { tile } = currentTileContext;
+            tileStates[tile.id].subgoals.splice(idx, 1);
+
+            // Re-check completion status
+            const allComplete = tileStates[tile.id].subgoals.every(s => s.completed);
+            if (allComplete && tileStates[tile.id].subgoals.length > 0) {
+                tileStates[tile.id].completed = true;
+            } else if (tileStates[tile.id].subgoals.length === 0) {
+                tileStates[tile.id].completed = false;
+            }
+
+            saveState();
+            renderSubgoalList();
+            renderSections();
+            updateProgress();
+        }
+
+        // ============================================
+        // PROGRESS
+        // ============================================
+        function updateProgress() {
+            let total = 0;
+            let completed = 0;
+
+            config.sections.forEach(section => {
+                section.tiles.forEach(tile => {
+                    total++;
+                    if (tileStates[tile.id]?.completed) completed++;
+                });
+            });
+
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = total > 0 
+                ? `${completed} / ${total} (${percentage}%)`
+                : 'Add some goals!';
+        }
+
+        // ============================================
+        // TITLES
+        // ============================================
+        function editMainTitle() {
+            const newTitle = prompt('Enter new title:', config.title);
+            if (newTitle && newTitle.trim()) {
+                config.title = newTitle.trim();
+                document.getElementById('mainTitle').textContent = config.title;
+                saveConfig();
+            }
+        }
+
+        function editSectionTitle(sectionIdx) {
+            const currentName = config.sections[sectionIdx].name;
+            const newName = prompt('Enter new section name:', currentName);
+            if (newName && newName.trim()) {
+                config.sections[sectionIdx].name = newName.trim();
+                saveConfig();
+                renderFilterPills();
+                renderSections();
+            }
+        }
+
+        // ============================================
+        // SAVE / LOAD
+        // ============================================
+        function saveConfig() {
+            localStorage.setItem('bingoConfig', JSON.stringify(config));
+        }
+
+        function saveState() {
+            localStorage.setItem('bingoStates', JSON.stringify(tileStates));
+        }
+
+        function exportProgress() {
+            const data = {
+                config: config,
+                states: tileStates,
+                exportDate: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `osrs_goals_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importProgress(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.config) {
+                        config = data.config;
+                        saveConfig();
+                    }
+                    if (data.states) {
+                        tileStates = data.states;
+                        saveState();
+                    }
+                    document.getElementById('mainTitle').textContent = config.title;
+                    renderFilterPills();
+                    renderSections();
+                    updateProgress();
+                    alert('Progress loaded!');
+                } catch (err) {
+                    alert('Error loading file.');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function resetProgress() {
+            if (confirm('Reset ALL progress and tiles? This cannot be undone!')) {
+                config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+                tileStates = {};
+                saveConfig();
+                saveState();
+                document.getElementById('mainTitle').textContent = config.title;
+                renderFilterPills();
+                renderSections();
+                updateProgress();
+            }
+        }
+
+        // ============================================
+        // CHANGELOG
+        // ============================================
+        function checkChangelogBadge() {
+            const lastSeen = localStorage.getItem('changelogLastSeen');
+            const badge = document.getElementById('changelogBadge');
+            
+            if (!lastSeen || lastSeen < LAST_UPDATE_DATE) {
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function openChangelog() {
+            const content = document.getElementById('changelogContent');
+            
+            content.innerHTML = CHANGELOG.map((entry, idx) => `
+                <div class="changelog-entry">
+                    <div class="changelog-date" onclick="toggleChangelogEntry(${idx})">
+                        <span class="toggle">${idx === 0 ? '▼' : '▶'}</span>
+                        ${entry.date}
+                        ${entry.isLatest ? '<span class="changelog-badge">LATEST</span>' : ''}
+                    </div>
+                    <ul class="changelog-items ${idx === 0 ? '' : 'changelog-collapsed'}" id="changelog-${idx}">
+                        ${entry.items.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+
+            document.getElementById('changelogModal').classList.add('visible');
+
+            // Mark as seen
+            localStorage.setItem('changelogLastSeen', LAST_UPDATE_DATE);
+            document.getElementById('changelogBadge').style.display = 'none';
+        }
+
+        function toggleChangelogEntry(idx) {
+            const items = document.getElementById(`changelog-${idx}`);
+            const entry = items.previousElementSibling;
+            const toggle = entry.querySelector('.toggle');
+            
+            if (items.classList.contains('changelog-collapsed')) {
+                items.classList.remove('changelog-collapsed');
+                toggle.textContent = '▼';
+            } else {
+                items.classList.add('changelog-collapsed');
+                toggle.textContent = '▶';
+            }
+        }
+
+        // ============================================
+        // MODAL HELPERS
+        // ============================================
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('visible');
+        }
+
+        // ============================================
+        // START
+        // ============================================
+        init();
+    </script>
+</body>
+</html>
