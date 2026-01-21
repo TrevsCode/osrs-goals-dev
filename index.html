@@ -514,24 +514,25 @@
 
         .lookup-input {
             width: 100%;
-            padding: 12px;
-            padding-right: 40px;
+            padding: 14px;
+            padding-right: 45px;
             background: var(--osrs-black);
             border: 2px solid var(--osrs-border-dark);
             color: var(--osrs-tan);
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .lookup-input:focus { outline: none; border-color: var(--osrs-gold); }
 
         .lookup-spinner {
             position: absolute;
-            right: 12px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--osrs-gold);
             display: none;
+            font-size: 18px;
         }
 
         .lookup-spinner.visible { display: block; animation: spin 1s linear infinite; }
@@ -539,14 +540,11 @@
         @keyframes spin { 100% { transform: translateY(-50%) rotate(360deg); } }
 
         .lookup-results {
-            position: absolute;
-            top: 100%; left: 0; right: 0;
-            max-height: 250px;
+            max-height: 350px;
             overflow-y: auto;
             background: var(--osrs-dark-brown);
             border: 2px solid var(--osrs-border-dark);
-            border-top: none;
-            z-index: 100;
+            margin-top: 10px;
             display: none;
         }
 
@@ -555,30 +553,33 @@
         .lookup-result-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
+            gap: 15px;
+            padding: 12px 15px;
             cursor: pointer;
             border-bottom: 1px solid var(--osrs-border-dark);
+            transition: background 0.1s;
         }
+
+        .lookup-result-item:last-child { border-bottom: none; }
 
         .lookup-result-item:hover { background: var(--osrs-light-brown); }
         .lookup-result-item:hover .lookup-result-name { color: var(--osrs-yellow); }
 
         .lookup-result-img {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             object-fit: contain;
             image-rendering: pixelated;
             background: var(--osrs-black);
             border: 1px solid var(--osrs-border-dark);
-            padding: 2px;
+            padding: 3px;
         }
 
-        .lookup-result-name { flex: 1; color: var(--osrs-tan); font-size: 13px; }
+        .lookup-result-name { flex: 1; color: var(--osrs-tan); font-size: 15px; }
 
-        .lookup-no-results { padding: 15px; text-align: center; color: #888; font-size: 12px; }
+        .lookup-no-results { padding: 20px; text-align: center; color: #888; font-size: 14px; }
 
-        .lookup-hint { font-size: 10px; color: #666; margin-top: 8px; text-align: center; }
+        .lookup-hint { font-size: 12px; color: #888; margin-top: 12px; text-align: center; }
 
         /* ============================================
            SUB-GOALS
@@ -834,20 +835,20 @@
 
     <!-- Item Lookup Modal -->
     <div class="modal-overlay" id="lookupModal">
-        <div class="modal">
+        <div class="modal" style="max-width: 550px; width: 95%;">
             <div class="modal-header">
                 <div class="modal-title">🔍 Item Lookup</div>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding: 25px;">
                 <div class="lookup-container">
                     <div class="lookup-input-wrapper">
-                        <input type="text" class="lookup-input" id="lookupInput" placeholder="Search items... (e.g. abyssal whip)" autocomplete="off">
+                        <input type="text" class="lookup-input" id="lookupInput" placeholder="Search items... (e.g. abyssal whip, fighter torso)" autocomplete="off">
                         <span class="lookup-spinner" id="lookupSpinner">⟳</span>
                     </div>
                     <div class="lookup-results" id="lookupResults"></div>
                 </div>
-                <div class="lookup-hint">Type at least 2 characters to search</div>
-                <div class="modal-buttons" style="margin-top: 15px;">
+                <div class="lookup-hint">Type at least 2 characters to search OSRS items</div>
+                <div class="modal-buttons" style="margin-top: 20px;">
                     <button class="osrs-btn" onclick="closeModal('lookupModal')">Cancel</button>
                 </div>
             </div>
@@ -1322,12 +1323,80 @@
         // ============================================
         // ITEM LOOKUP
         // ============================================
+        let osrsItemsCache = null;
+        
+        // Curated list of popular untradeable items
+        const UNTRADEABLE_ITEMS = [
+            "Fighter torso", "Fire cape", "Infernal cape", "Void knight top", "Void knight robe", 
+            "Void knight gloves", "Void knight mace", "Void melee helm", "Void mage helm", "Void ranger helm",
+            "Elite void top", "Elite void robe", "Barrows gloves", "Dragon defender", "Rune defender",
+            "Adamant defender", "Mithril defender", "Avernic defender", "Imbued heart", 
+            "Rune pouch", "Looting bag", "Ava's assembler", "Ava's accumulator", "Ava's attractor",
+            "Ardougne cloak 1", "Ardougne cloak 2", "Ardougne cloak 3", "Ardougne cloak 4",
+            "Fire max cape", "Infernal max cape", "Assembler max cape", "Imbued guthix cape",
+            "Imbued saradomin cape", "Imbued zamorak cape", "Mythical cape", "Quest point cape",
+            "Achievement diary cape", "Music cape", "Max cape", "Graceful hood", "Graceful top",
+            "Graceful legs", "Graceful gloves", "Graceful boots", "Graceful cape",
+            "Slayer helmet", "Slayer helmet (i)", "Black slayer helmet", "Black slayer helmet (i)",
+            "Green slayer helmet", "Green slayer helmet (i)", "Red slayer helmet", "Red slayer helmet (i)",
+            "Purple slayer helmet", "Purple slayer helmet (i)", "Turquoise slayer helmet", "Turquoise slayer helmet (i)",
+            "Hydra slayer helmet", "Hydra slayer helmet (i)", "Twisted slayer helmet", "Twisted slayer helmet (i)",
+            "Salve amulet", "Salve amulet (e)", "Salve amulet(i)", "Salve amulet(ei)",
+            "Holy wrench", "Bonecrusher", "Gem bag", "Coal bag", "Herb sack", "Seed box",
+            "Farmer's strawhat", "Farmer's jacket", "Farmer's boro trousers", "Farmer's boots",
+            "Angler hat", "Angler top", "Angler waders", "Angler boots",
+            "Spirit angler headband", "Spirit angler top", "Spirit angler waders", "Spirit angler boots",
+            "Lumberjack hat", "Lumberjack top", "Lumberjack legs", "Lumberjack boots",
+            "Prospector helmet", "Prospector jacket", "Prospector legs", "Prospector boots",
+            "Pyromancer hood", "Pyromancer garb", "Pyromancer robe", "Pyromancer boots", "Warm gloves",
+            "Rogue mask", "Rogue top", "Rogue trousers", "Rogue gloves", "Rogue boots",
+            "Serpentine helm", "Tanzanite helm", "Magma helm", "Trident of the swamp", "Toxic blowpipe",
+            "Toxic staff of the dead", "Abyssal tentacle", "Kraken tentacle",
+            "Crystal bow", "Crystal shield", "Crystal halberd", "Crystal helm", "Crystal body", "Crystal legs",
+            "Blade of saeldor", "Bow of faerdhinen", "Corrupted blade of saeldor", "Corrupted bow of faerdhinen",
+            "Scythe of vitur", "Sanguinesti staff", "Ghrazi rapier", "Justiciar faceguard", 
+            "Justiciar chestguard", "Justiciar legguards", "Avernic defender hilt",
+            "Tumeken's shadow", "Elidinis' ward", "Masori mask", "Masori body", "Masori chaps",
+            "Lightbearer", "Osmumten's fang", "Keris partisan of breaching",
+            "Torva full helm", "Torva platebody", "Torva platelegs",
+            "Ancient godsword", "Zaryte crossbow", "Zaryte vambraces",
+            "Ring of the gods", "Ring of the gods (i)", "Tyrannical ring", "Tyrannical ring (i)",
+            "Treasonous ring", "Treasonous ring (i)", "Berserker ring (i)", "Archers ring (i)",
+            "Seers ring (i)", "Warrior ring (i)", "Granite ring (i)", "Ring of suffering (i)",
+            "Black mask (i)", "Imbued black mask"
+        ];
+
+        async function loadOsrsItems() {
+            if (osrsItemsCache) return osrsItemsCache;
+            
+            try {
+                const response = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping', {
+                    headers: { 'User-Agent': 'OSRS Bingo Board - Goal Tracker' }
+                });
+                const tradeableItems = await response.json();
+                
+                // Combine tradeable items with untradeable list
+                const untradeableObjects = UNTRADEABLE_ITEMS.map(name => ({ name, untradeable: true }));
+                osrsItemsCache = [...tradeableItems, ...untradeableObjects];
+                
+            } catch (err) {
+                console.error('Failed to load items:', err);
+                // Fallback to just untradeables if API fails
+                osrsItemsCache = UNTRADEABLE_ITEMS.map(name => ({ name, untradeable: true }));
+            }
+            
+            return osrsItemsCache;
+        }
+
         function openItemLookup() {
             hideContextMenu();
             document.getElementById('lookupInput').value = '';
             document.getElementById('lookupResults').classList.remove('visible');
             document.getElementById('lookupModal').classList.add('visible');
             setTimeout(() => document.getElementById('lookupInput').focus(), 100);
+            
+            // Preload items
+            loadOsrsItems();
         }
 
         async function searchItems(query) {
@@ -1337,32 +1406,30 @@
             spinner.classList.add('visible');
 
             try {
-                // Use OSRS Wiki opensearch API - includes ALL items (tradeables AND untradeables)
-                const searchUrl = `https://oldschool.runescape.wiki/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=20&namespace=0&format=json&origin=*`;
+                const items = await loadOsrsItems();
                 
-                const response = await fetch(searchUrl);
-                const data = await response.json();
-                
-                // data[1] contains the titles, data[3] contains the URLs
-                const titles = data[1] || [];
-                
-                if (titles.length === 0) {
-                    results.innerHTML = '<div class="lookup-no-results">No items found. Try a different search.</div>';
+                const queryLower = query.toLowerCase();
+                const matchingItems = items.filter(item =>
+                    item.name.toLowerCase().includes(queryLower)
+                ).slice(0, 25);
+
+                if (matchingItems.length === 0) {
+                    results.innerHTML = '<div class="lookup-no-results">No items found. Try a different search or use "Edit Content" to add a custom image URL.</div>';
                     results.classList.add('visible');
                     spinner.classList.remove('visible');
                     return;
                 }
 
                 // Build results HTML
-                results.innerHTML = titles.map(title => {
-                    const imageName = title.replace(/ /g, '_');
+                results.innerHTML = matchingItems.map(item => {
+                    const imageName = item.name.replace(/ /g, '_');
                     const imageUrl = `https://oldschool.runescape.wiki/images/${encodeURIComponent(imageName)}_detail.png`;
                     const fallbackUrl = `https://oldschool.runescape.wiki/images/${encodeURIComponent(imageName)}.png`;
 
                     return `
-                        <div class="lookup-result-item" onclick="selectItem('${escapeHtml(title)}', '${escapeHtml(imageUrl)}', '${escapeHtml(fallbackUrl)}')">
+                        <div class="lookup-result-item" onclick="selectItem('${escapeHtml(item.name)}', '${escapeHtml(imageUrl)}', '${escapeHtml(fallbackUrl)}')">
                             <img class="lookup-result-img" src="${imageUrl}" onerror="this.onerror=null; this.src='${fallbackUrl}';">
-                            <span class="lookup-result-name">${escapeHtml(title)}</span>
+                            <span class="lookup-result-name">${escapeHtml(item.name)}</span>
                         </div>
                     `;
                 }).join('');
